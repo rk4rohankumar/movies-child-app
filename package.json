@@ -2,6 +2,7 @@
   "name": "movies",
   "version": "0.1.0",
   "private": true,
+  "description": "Movies micro-frontend remote: OMDb search exposed through webpack Module Federation as MoviesApp (./MoviesApp from src/App) and consumed at runtime by the host shell.",
   "dependencies": {
     "@craco/craco": "^7.1.0",
     "autoprefixer": "^10.4.20",

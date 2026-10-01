@@ -5,9 +5,10 @@ import usePrefersReducedMotion from "../hooks/usePrefersReducedMotion";
 
 const MovieCard = ({ movie }) => {
   const reduced = usePrefersReducedMotion();
-  const hasPoster = movie.Poster && movie.Poster !== "N/A";
-  const [imgFailed, setImgFailed] = useState(false);
-  const showImg = hasPoster && !imgFailed;
+  // OMDb returns the literal string "N/A" when it has no poster.
+  const hasPoster = Boolean(movie.Poster) && movie.Poster !== "N/A";
+  const [broken, setBroken] = useState(false);
+  const showImg = hasPoster && !broken;
 
   return (
     <motion.article
@@ -16,18 +17,24 @@ const MovieCard = ({ movie }) => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: reduced ? 0 : 0.4 }}
     >
-      {showImg ? (
-        <img
-          src={movie.Poster}
-          alt={`Poster for ${movie.Title}`}
-          className="w-full h-72 object-cover"
-          loading="lazy"
-          decoding="async"
-          onError={() => setImgFailed(true)}
-        />
-      ) : (
-        <PosterPlaceholder title={movie.Title} />
-      )}
+      {/* Fixed 2:3 box so the card keeps its height whether the poster loads,
+          fails, or is replaced by the placeholder. */}
+      <div className="relative w-full aspect-[2/3] bg-gray-100 overflow-hidden">
+        {showImg ? (
+          <img
+            src={movie.Poster}
+            alt={`${movie.Title} poster`}
+            width="300"
+            height="450"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            onError={() => setBroken(true)}
+          />
+        ) : (
+          <PosterPlaceholder title={movie.Title} />
+        )}
+      </div>
       <div className="p-4 flex flex-col gap-2 flex-1">
         <h2 className="text-xl font-semibold leading-tight">{movie.Title}</h2>
         <div className="flex items-center gap-2 text-sm">
@@ -42,10 +49,10 @@ const MovieCard = ({ movie }) => {
           href={`https://www.imdb.com/title/${movie.imdbID}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 text-sm hover:underline mt-auto focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-          aria-label={`View ${movie.Title} on IMDb (opens in new tab)`}
+          className="text-blue-600 text-sm hover:underline mt-auto self-start focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
         >
           View on IMDb
+          <span className="sr-only">: {movie.Title} (opens in a new tab)</span>
         </a>
       </div>
     </motion.article>
