@@ -1,99 +1,48 @@
-# Movies Child App Microfrontend
+# Movies · Micro Frontend remote
 
-This repository contains the **Movies Child App**, designed as a microfrontend in a larger application architecture. It is built using **React**, **Tailwind CSS**, and the **Module Federation Plugin** for Webpack, and configured with **CRACO** for custom configuration.
+OMDb movie search (search box, 10-per-page pagination, poster grid) packaged as a
+webpack Module Federation remote. It runs standalone on Vercel and is loaded at
+runtime by the [micro-frontend host](https://github.com/rk4rohankumar/micro-frontend-host).
 
-## Features
-- Developed as a microfrontend for seamless integration with a parent application.
-- Built with modern technologies like React and Tailwind CSS.
-- Module Federation for dynamic sharing of code between apps.
-- Responsive and optimized for performance.
+Stack: CRA 5 + CRACO 7, React 19, Tailwind 3, axios, framer-motion.
 
-## Tech Stack
-- **React**: Frontend library for building user interfaces.
-- **Tailwind CSS**: Utility-first CSS framework for styling.
-- **CRACO (Create React App Configuration Override)**: For extending CRA configuration.
-- **Webpack Module Federation**: For microfrontend architecture.
+## Data source
 
-## Project Setup
+[OMDb API](https://www.omdbapi.com/). Put your key in `.env`:
 
-### Prerequisites
-- Node.js (>= 14.x)
-- npm or yarn package manager
+```
+REACT_APP_OMDB_API_KEY=your_key
+```
 
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/rk4rohankumar/movies-child-app.git
-   cd movies-child-app
-   ```
+(See `.env.example`.) OMDb returns `"N/A"` when it has no poster, and some
+`m.media-amazon.com` poster URLs 404; both cases fall back to `PosterPlaceholder`
+inside a fixed 2:3 box so the grid never shifts.
 
-2. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+## Run / build
 
-### Running the Application
-To start the development server:
 ```bash
-npm start
-# or
-yarn start
-```
-The app will be accessible at [http://localhost:3000](http://localhost:3000).
-
-### Building for Production
-To create a production build:
-```bash
-npm run build
-# or
-yarn build
+npm install
+npm start          # http://localhost:3000 (dev publicPath '/')
+npm run build      # production build in build/ (publicPath 'auto')
 ```
 
-### Configuration Details
-#### CRACO and Webpack
-The project uses **CRACO** to customize the Webpack configuration for supporting Module Federation:
-- **publicPath**: Set to `https://movies-child-app.vercel.app/` for deployment.
-- **Module Federation Plugin**:
-  - Name: `MoviesApp`
-  - Remote Entry: `remoteEntry.js`
-  - Exposes: `./MoviesApp` from `./src/App`
-  - Shared Dependencies: `react`, `react-dom`, and `tailwindcss`
+## How the host consumes it
 
-### Deployment
-The app is deployed at: [https://movies-child-app.vercel.app/](https://movies-child-app.vercel.app/)
+| | |
+|---|---|
+| Scope name | `MoviesApp` |
+| Remote entry | `https://movies-child-app.vercel.app/remoteEntry.js` |
+| Exposed module | `./MoviesApp` → `src/App` |
 
-## Microfrontend Integration
-To consume this microfrontend in a parent application, include the following in your Module Federation configuration:
-```javascript
-new ModuleFederationPlugin({
-  remotes: {
-    MoviesApp: 'MoviesApp@https://movies-child-app.vercel.app/remoteEntry.js',
-  },
-})
-```
+The host injects `remoteEntry.js`, calls `container.init(__webpack_share_scopes__.default)`
+and then `container.get('./MoviesApp')`. `src/index.js` is an async boundary
+(`import('./bootstrap')`) so shared modules are negotiated before anything renders.
 
-## Scripts
-- `start`: Starts the development server.
-- `build`: Builds the app for production.
-- `test`: Runs tests.
-- `eject`: Ejects the CRA configuration.
+### Shared singletons
 
-## Folder Structure
-```
-movies-child-app/
-├── src/
-│   ├── components/   # Reusable components
-│   ├── App.js         # Main App component
-│   └── index.js       # Entry point
-├── public/            # Static files
-├── craco.config.js    # Custom configuration for Webpack
-└── package.json       # Project metadata and dependencies
-```
-
-## Contribution Guidelines
-Feel free to fork the repository and submit pull requests for any enhancements or bug fixes.
-
-## License
-This project is licensed under the [MIT License](LICENSE).
+`react`, `react-dom`, `framer-motion` and `axios` are declared `singleton: true`
+with `requiredVersion` taken from `package.json`. The host must provide the same
+singletons (and a compatible React major) or webpack will warn and fall back to
+this remote's own copy, which breaks hooks and context across the boundary.
+`publicPath` is `'auto'` in production so chunks resolve relative to wherever
+`remoteEntry.js` was fetched from.
