@@ -12,14 +12,14 @@ const MovieCard = ({ movie }) => {
 
   return (
     <motion.article
-      className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col"
+      className="bg-[var(--mfe-surface,#ffffff)] rounded-[var(--mfe-radius,12px)] shadow-sm overflow-hidden flex flex-col"
       initial={reduced ? false : { opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: reduced ? 0 : 0.4 }}
     >
       {/* Fixed 2:3 box so the card keeps its height whether the poster loads,
           fails, or is replaced by the placeholder. */}
-      <div className="relative w-full aspect-[2/3] bg-gray-100 overflow-hidden">
+      <div className="relative w-full aspect-[2/3] bg-[var(--mfe-sunken,#f8fafc)] overflow-hidden">
         {showImg ? (
           <img
             src={movie.Poster}
@@ -38,7 +38,7 @@ const MovieCard = ({ movie }) => {
       <div className="p-4 flex flex-col gap-2 flex-1">
         <h2 className="text-xl font-semibold leading-tight">{movie.Title}</h2>
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-600">{movie.Year}</span>
+          <span className="text-[color:var(--mfe-muted,#475569)]">{movie.Year}</span>
           {movie.Type && (
             <span className="inline-block px-2 py-0.5 text-xs font-medium uppercase tracking-wide rounded bg-indigo-100 text-indigo-800">
               {movie.Type}
@@ -49,7 +49,7 @@ const MovieCard = ({ movie }) => {
           href={`https://www.imdb.com/title/${movie.imdbID}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 text-sm hover:underline mt-auto self-start focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
+          className="text-[color:var(--mfe-accent,#047857)] text-sm hover:underline mt-auto self-start focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)] rounded"
         >
           View on IMDb
           <span className="sr-only">: {movie.Title} (opens in a new tab)</span>
