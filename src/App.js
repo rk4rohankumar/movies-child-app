@@ -79,7 +79,8 @@ const MoviesPage = () => {
 
   return (
     <section aria-labelledby="movies-heading" className="max-w-6xl mx-auto p-4">
-      <h1 id="movies-heading" className="text-3xl font-bold text-center mb-6">Popular Movies</h1>
+      <p className="text-xs font-medium uppercase tracking-widest text-[color:var(--mfe-accent,#047857)]">Movies remote</p>
+      <h1 id="movies-heading" className="mt-1 mb-6 text-2xl font-semibold text-[color:var(--mfe-ink,#0f172a)]">Popular Movies</h1>
 
       <form
         role="search"
@@ -94,7 +95,7 @@ const MoviesPage = () => {
           id="movie-search"
           type="search"
           placeholder="Search movies..."
-          className="p-2 border border-gray-300 rounded-md w-64 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="p-2 border border-[color:var(--mfe-border,#e2e8f0)] rounded-md w-64 text-center focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)]"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           autoComplete="off"
@@ -102,7 +103,7 @@ const MoviesPage = () => {
       </form>
 
       <p
-        className="text-sm text-gray-600 text-center mb-4"
+        className="text-sm text-[color:var(--mfe-muted,#475569)] text-center mb-4"
         aria-live="polite"
         aria-atomic="true"
       >
@@ -141,7 +142,7 @@ const MoviesPage = () => {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="px-4 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 rounded-md bg-[var(--mfe-accent,#047857)] text-white disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)]"
                 aria-label="Previous page"
               >
                 Previous
@@ -153,7 +154,7 @@ const MoviesPage = () => {
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="px-4 py-2 rounded-md bg-blue-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 rounded-md bg-[var(--mfe-accent,#047857)] text-white disabled:bg-gray-300 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-[color:var(--mfe-accent,#047857)]"
                 aria-label="Next page"
               >
                 Next
